@@ -90,10 +90,9 @@ DATABASES = {
     }
 }
 
-CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000',
-    'http://localhost:8000',
-]
+# Flutter web runs on a random localhost port, so allow all origins in dev.
+# If you want to lock this down later, switch back to CORS_ALLOWED_ORIGINS.
+CORS_ALLOW_ALL_ORIGINS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
