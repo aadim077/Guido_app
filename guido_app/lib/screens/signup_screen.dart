@@ -35,7 +35,6 @@ class _SignupScreenState extends State<SignupScreen> {
     final confirm = _confirmPasswordController.text;
     final confirmError = Validators.validateConfirmPassword(password, confirm);
     if (confirmError != null) {
-      context.read<AuthProvider>().logout(); // not strictly needed, but keeps state clean
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(confirmError)));
       return;
     }

@@ -84,7 +84,7 @@ class _AdminDashboardScreenState extends State<AdminDashboardScreen> {
                     children: [
                       if (user != null)
                         Card(
-                          color: Colors.teal.withOpacity(0.08),
+                          color: Colors.teal.withValues(alpha: 0.08),
                           child: Padding(
                             padding: const EdgeInsets.all(16),
                             child: Column(
