@@ -16,7 +16,6 @@ class SignupView(APIView):
     def post(self, request):
         serializer = SignupSerializer(data=request.data)
         if not serializer.is_valid():
-            # keeping it simple: surface a single error string
             detail = serializer.errors
             if isinstance(detail, dict) and "error" in detail:
                 return Response({"error": detail["error"][0] if isinstance(detail["error"], list) else detail["error"]}, status=400)
@@ -64,25 +63,55 @@ class AdminDashboardView(APIView):
     permission_classes = [IsAuthenticated, IsAdminRole]
 
     def get(self, request):
+        from courses.models import Course, UserCourseEnrollment, Certificate
+
         total_users = User.objects.count()
+        total_courses = Course.objects.filter(is_published=True).count()
+        total_enrollments = UserCourseEnrollment.objects.count()
+        total_certificates = Certificate.objects.count()
+
         recent_users = User.objects.order_by("-created_at")[:5]
-        recent_payload = [
-            {
-                "id": u.id,
-                "email": u.email,
-                "username": u.username,
-                "role": u.role,
-                "phone": u.phone,
-            }
-            for u in recent_users
-        ]
+        recent_enrollments = (
+            UserCourseEnrollment.objects.select_related("user", "course")
+            .order_by("-enrolled_at")[:10]
+        )
+
+        course_breakdown = []
+        for course in Course.objects.filter(is_published=True).order_by("order"):
+            count = UserCourseEnrollment.objects.filter(course=course).count()
+            course_breakdown.append({
+                "course": course.title,
+                "difficulty": course.difficulty,
+                "enrollments": count,
+            })
 
         return Response(
             {
                 "message": f"Welcome back, {request.user.username}",
                 "stats": {
                     "total_users": total_users,
-                    "recent_users": recent_payload,
+                    "total_courses": total_courses,
+                    "total_enrollments": total_enrollments,
+                    "total_certificates": total_certificates,
+                    "recent_users": [
+                        {
+                            "id": u.id,
+                            "email": u.email,
+                            "username": u.username,
+                            "role": u.role,
+                        }
+                        for u in recent_users
+                    ],
+                    "recent_enrollments": [
+                        {
+                            "user": e.user.username,
+                            "course": e.course.title,
+                            "enrolled_at": e.enrolled_at.strftime("%Y-%m-%d"),
+                            "completed": e.completed,
+                        }
+                        for e in recent_enrollments
+                    ],
+                    "course_breakdown": course_breakdown,
                 },
             },
             status=200,

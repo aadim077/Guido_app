@@ -5,8 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'providers/auth_provider.dart';
 import 'providers/course_provider.dart';
 import 'screens/admin_dashboard_screen.dart';
-import 'screens/home_screen.dart';
 import 'screens/login_screen.dart';
+import 'screens/main_navigation_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/splash_screen.dart';
 
@@ -28,7 +28,7 @@ class GuidoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final baseTheme = ThemeData(
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
+      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF2563EB)),
       useMaterial3: true,
     );
 
@@ -43,7 +43,7 @@ class GuidoApp extends StatelessWidget {
         '/splash': (_) => const SplashScreen(),
         '/login': (_) => const LoginScreen(),
         '/signup': (_) => const SignupScreen(),
-        '/home': (_) => const HomeScreen(),
+        '/home': (_) => const MainNavigationScreen(),
         '/admin-dashboard': (_) => const AdminDashboardScreen(),
       },
     );
