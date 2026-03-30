@@ -1,0 +1,31 @@
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+.idea/
+.vscode/
+
+*.log
+
+# Flutter tool/state
+guido_app/.dart_tool/
+guido_app/build/
+guido_app/.flutter-plugins
+guido_app/.flutter-plugins-dependencies
+
+# OS
+Thumbs.db
+.DS_Store
