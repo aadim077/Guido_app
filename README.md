@@ -12,7 +12,8 @@ Users can sign up / log in, browse and enroll in Python courses, complete lesson
 - **Quizzes**: Test your knowledge at the end of each module
 - **Certificates**: Automatically earn and download a personalized PDF certificate upon completing a full course (all lessons and quizzes passed)
 - **Profile & Progress**: Track your learning stats, earned certificates, and total points
-- **Admin Dashboard**: View platform statistics (users, courses, recent enrollments, and course popularity breakdown)
+- **Code Practice**: Solve 5 Python coding challenges directly in the app with a built-in code editor, real-time execution, and automated judging
+- **Admin Dashboard**: View platform statistics (users, courses, enrollments, certificates, and code practice metrics)
 
 ## Tech Stack
 
@@ -54,6 +55,7 @@ python manage.py makemigrations accounts courses
 python manage.py migrate
 python manage.py seed_users
 python manage.py seed_courses
+python manage.py seed_coding_questions
 python manage.py runserver
 ```
 
@@ -78,6 +80,11 @@ All endpoints are under `/api/`.
 - **POST** `/api/quizzes/module/<id>/submit/` (JWT required)
 - **GET/POST** `/api/certificates/` (JWT required)
 - **GET** `/api/progress/` (JWT required)
+- **GET** `/api/code/questions/` (JWT required)
+- **GET** `/api/code/questions/<id>/` (JWT required)
+- **POST** `/api/code/run/` (JWT required)
+- **POST** `/api/code/submit/` (JWT required)
+- **GET** `/api/code/submissions/` (JWT required)
 
 ## Frontend Setup
 
@@ -102,6 +109,7 @@ GG/
 ├── backend/
 │   ├── accounts/
 │   ├── courses/
+│   ├── code_practice/
 │   ├── guido_backend/
 │   ├── manage.py
 │   └── requirements.txt
@@ -115,5 +123,27 @@ GG/
 │   │   └── widgets/
 │   └── pubspec.yaml
 └── README.md
+```
+
+## Code Practice Feature
+
+The Code Practice tab lets users solve 5 Python coding challenges:
+
+1. **Print Hello Guido** — simple print statement
+2. **Sum of Two Numbers** — read input, compute sum
+3. **Even or Odd** — conditional logic
+4. **Maximum of Three Numbers** — find the largest value
+5. **Reverse a String** — string manipulation
+
+Flow: user writes Python code in the Flutter editor → code is sent to the Django backend → backend executes it with `subprocess.run(..., timeout=3)` → stdout/stderr captured → output compared against expected output for judging.
+
+Basic safety checks block dangerous patterns (e.g., `os.system`, `subprocess`, `eval`).
+
+> **Note:** This is an MVP implementation. The execution environment is not sandboxed. Do not expose to untrusted users without adding Docker-based isolation or a dedicated code runner.
+
+To seed the coding questions:
+
+```bash
+python manage.py seed_coding_questions
 ```
 

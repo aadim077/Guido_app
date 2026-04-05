@@ -64,11 +64,15 @@ class AdminDashboardView(APIView):
 
     def get(self, request):
         from courses.models import Course, UserCourseEnrollment, Certificate
+        from code_practice.models import CodingQuestion, UserCodeSubmission
 
         total_users = User.objects.count()
         total_courses = Course.objects.filter(is_published=True).count()
         total_enrollments = UserCourseEnrollment.objects.count()
         total_certificates = Certificate.objects.count()
+        total_coding_questions = CodingQuestion.objects.filter(is_active=True).count()
+        total_code_submissions = UserCodeSubmission.objects.count()
+        passed_code_submissions = UserCodeSubmission.objects.filter(passed=True).count()
 
         recent_users = User.objects.order_by("-created_at")[:5]
         recent_enrollments = (
@@ -93,6 +97,9 @@ class AdminDashboardView(APIView):
                     "total_courses": total_courses,
                     "total_enrollments": total_enrollments,
                     "total_certificates": total_certificates,
+                    "total_coding_questions": total_coding_questions,
+                    "total_code_submissions": total_code_submissions,
+                    "passed_code_submissions": passed_code_submissions,
                     "recent_users": [
                         {
                             "id": u.id,

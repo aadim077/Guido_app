@@ -211,6 +211,24 @@ class _StatsGrid extends StatelessWidget {
         label: 'Certificates',
         value: stats['total_certificates']?.toString() ?? '0',
       ),
+      _StatItem(
+        icon: Icons.code_rounded,
+        color: const Color(0xFF0891B2),
+        label: 'Code Questions',
+        value: stats['total_coding_questions']?.toString() ?? '0',
+      ),
+      _StatItem(
+        icon: Icons.send_rounded,
+        color: const Color(0xFFE11D48),
+        label: 'Submissions',
+        value: stats['total_code_submissions']?.toString() ?? '0',
+      ),
+      _StatItem(
+        icon: Icons.check_circle_outline_rounded,
+        color: const Color(0xFF059669),
+        label: 'Passed Code',
+        value: stats['passed_code_submissions']?.toString() ?? '0',
+      ),
     ];
 
     return GridView.count(
