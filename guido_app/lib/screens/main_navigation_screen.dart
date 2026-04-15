@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/course_provider.dart';
+import '../providers/reminder_provider.dart';
 import 'code_screen.dart';
 import 'home_screen.dart';
 import 'learn_screen.dart';
@@ -14,17 +15,35 @@ class MainNavigationScreen extends StatefulWidget {
   State<MainNavigationScreen> createState() => _MainNavigationScreenState();
 }
 
-class _MainNavigationScreenState extends State<MainNavigationScreen> {
+class _MainNavigationScreenState extends State<MainNavigationScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<CourseProvider>().loadCourses();
       context.read<CourseProvider>().loadUserProgress();
       context.read<CourseProvider>().loadCertificates();
+      context.read<ReminderProvider>().loadSettings();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      final provider = context.read<ReminderProvider>();
+      if (provider.isReminderEnabled) {
+        provider.loadSettings();
+      }
+    }
   }
 
   @override

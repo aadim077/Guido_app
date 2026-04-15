@@ -147,3 +147,21 @@ To seed the coding questions:
 python manage.py seed_coding_questions
 ```
 
+## Local Notifications - Daily Study Reminders
+
+- Feature: Daily reminder at user-selected time
+- No backend required, fully local
+- Packages: flutter_local_notifications, timezone
+- Setup: no extra setup needed, auto-initializes on app start
+- User flow:
+  1. Open Profile tab
+  2. Tap Settings
+  3. Enable Daily Reminder
+  4. Pick a time using time picker
+  5. Notification is scheduled and fires every day at that time
+  6. User can update time or disable reminder any time
+- Android: requires android.permission.POST_NOTIFICATIONS on Android 13+
+- iOS: permission prompt shown on first enable
+- Web: not supported, handled gracefully
+- Notification tap: opens the Home screen
+

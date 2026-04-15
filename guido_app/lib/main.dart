@@ -1,23 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:timezone/data/latest_all.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import 'providers/auth_provider.dart';
 import 'providers/code_practice_provider.dart';
 import 'providers/course_provider.dart';
+import 'providers/reminder_provider.dart';
+import 'services/notification_service.dart';
 import 'screens/admin_dashboard_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/main_navigation_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/splash_screen.dart';
+import 'screens/settings_screen.dart';
+import 'utils/navigation_key.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.local);
+  await NotificationService().initializeNotifications();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => CourseProvider()),
         ChangeNotifierProvider(create: (_) => CodePracticeProvider()),
+        ChangeNotifierProvider(create: (_) => ReminderProvider()),
       ],
       child: const GuidoApp(),
     ),
@@ -40,6 +52,7 @@ class GuidoApp extends StatelessWidget {
       theme: baseTheme.copyWith(
         textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme),
       ),
+      navigatorKey: navigatorKey,
       initialRoute: '/splash',
       routes: {
         '/splash': (_) => const SplashScreen(),
@@ -47,6 +60,7 @@ class GuidoApp extends StatelessWidget {
         '/signup': (_) => const SignupScreen(),
         '/home': (_) => const MainNavigationScreen(),
         '/admin-dashboard': (_) => const AdminDashboardScreen(),
+        '/settings': (_) => const SettingsScreen(),
       },
     );
   }
