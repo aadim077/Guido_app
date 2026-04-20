@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../config/api_config.dart';
 import '../models/certificate_model.dart';
 import '../models/course_model.dart';
+import '../models/leaderboard_model.dart';
 import '../models/lesson_model.dart';
 import '../models/progress_model.dart';
 import '../models/quiz_model.dart';
@@ -330,6 +331,27 @@ class CourseService {
     if (downloads != null) return downloads;
 
     return getApplicationDocumentsDirectory();
+  }
+
+  Future<List<LeaderboardEntry>> getLeaderboard() async {
+    final token = await _getToken();
+    if (token == null || token.isEmpty) {
+      throw const CourseServiceException('Not authenticated');
+    }
+
+    try {
+      final response = await http.get(
+        _uri('leaderboard/'),
+        headers: _headers(token: token),
+      );
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw CourseServiceException(_extractError(response));
+      }
+      final list = _decodeJsonList(response.body);
+      return list.map((e) => LeaderboardEntry.fromJson(e as Map<String, dynamic>)).toList();
+    } catch (e) {
+      throw CourseServiceException(e.toString().replaceFirst('CourseServiceException: ', ''));
+    }
   }
 }
 

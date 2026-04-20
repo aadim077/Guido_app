@@ -5,6 +5,7 @@ import '../models/course_model.dart';
 import '../providers/auth_provider.dart';
 import '../providers/course_provider.dart';
 import 'course_detail_screen.dart';
+import 'leaderboard_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -175,11 +176,17 @@ class _StatsRow extends StatelessWidget {
         ),
         const SizedBox(width: 12),
         Expanded(
-          child: _StatCard(
-            color: const Color(0xFFF59E0B),
-            icon: Icons.emoji_events,
-            value: '$percentage%',
-            label: 'Progress',
+          child: GestureDetector(
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const LeaderboardScreen()),
+            ),
+            child: _StatCard(
+              color: const Color(0xFFF59E0B),
+              icon: Icons.emoji_events,
+              value: '$percentage%',
+              label: 'Progress',
+            ),
           ),
         ),
         const SizedBox(width: 12),

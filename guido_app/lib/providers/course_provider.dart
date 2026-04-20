@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 import '../models/certificate_model.dart';
 import '../models/course_model.dart';
+import '../models/leaderboard_model.dart';
 import '../models/lesson_model.dart';
 import '../models/progress_model.dart';
 import '../models/quiz_model.dart';
@@ -19,6 +20,7 @@ class CourseProvider extends ChangeNotifier {
   QuizResult? _lastQuizResult;
   UserProgress? _userProgress;
   List<Certificate> _certificates = const [];
+  List<LeaderboardEntry> _leaderboard = const [];
 
   bool _loadingCourses = false;
   bool _loadingCourseDetail = false;
@@ -31,6 +33,7 @@ class CourseProvider extends ChangeNotifier {
   bool _loadingCertificates = false;
   bool _claimingCertificate = false;
   bool _downloadingCertificate = false;
+  bool _loadingLeaderboard = false;
 
   String? _error;
 
@@ -41,6 +44,7 @@ class CourseProvider extends ChangeNotifier {
   QuizResult? get lastQuizResult => _lastQuizResult;
   UserProgress? get userProgress => _userProgress;
   List<Certificate> get certificates => _certificates;
+  List<LeaderboardEntry> get leaderboard => _leaderboard;
 
   bool get loadingCourses => _loadingCourses;
   bool get loadingCourseDetail => _loadingCourseDetail;
@@ -53,6 +57,7 @@ class CourseProvider extends ChangeNotifier {
   bool get loadingCertificates => _loadingCertificates;
   bool get claimingCertificate => _claimingCertificate;
   bool get downloadingCertificate => _downloadingCertificate;
+  bool get loadingLeaderboard => _loadingLeaderboard;
 
   String? get error => _error;
 
@@ -255,6 +260,21 @@ class CourseProvider extends ChangeNotifier {
       return null;
     } finally {
       _downloadingCertificate = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> loadLeaderboard() async {
+    _loadingLeaderboard = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      _leaderboard = await _service.getLeaderboard();
+    } catch (e) {
+      _setError(e);
+    } finally {
+      _loadingLeaderboard = false;
       notifyListeners();
     }
   }

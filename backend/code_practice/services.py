@@ -106,9 +106,15 @@ def judge_submission(code, test_input, expected_output):
     actual_normalized = normalize_output(result["stdout"])
     expected_normalized = normalize_output(expected_output)
 
-    passed = False
-    if result["success"] and not result["timed_out"]:
+    if result["timed_out"]:
+        passed = False
+        error_message = "Execution timed out after 3 seconds."
+    elif result["stderr"]:
+        passed = False
+        error_message = result["stderr"]
+    else:
         passed = actual_normalized == expected_normalized
+        error_message = None if passed else "Output did not match expected result"
 
     return {
         "actual_output": result["stdout"],
@@ -117,4 +123,5 @@ def judge_submission(code, test_input, expected_output):
         "passed": passed,
         "execution_time_ms": result["execution_time_ms"],
         "timed_out": result["timed_out"],
+        "error_message": error_message,
     }

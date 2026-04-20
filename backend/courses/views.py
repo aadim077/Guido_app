@@ -12,6 +12,8 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django.contrib.auth import get_user_model
+
 from .models import Certificate, Course, Lesson, Module, QuizQuestion, UserCourseEnrollment, UserLessonProgress, UserQuizAttempt
 from .pdf_generator import generate_certificate_pdf
 from .serializers import (
@@ -376,3 +378,28 @@ class DownloadCertificateView(APIView):
             filename=filename,
             content_type="application/pdf",
         )
+
+
+class LeaderboardView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        User = get_user_model()
+        users = User.objects.all()
+
+        entries = []
+        for user in users:
+            points = _overall_points_for_user(user)
+            entries.append({
+                "user_id": user.id,
+                "username": user.username,
+                "points": points,
+                "is_current_user": user.id == request.user.id,
+            })
+
+        entries.sort(key=lambda e: e["points"], reverse=True)
+
+        for rank, entry in enumerate(entries, start=1):
+            entry["rank"] = rank
+
+        return Response(entries, status=200)

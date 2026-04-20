@@ -48,7 +48,7 @@ class RunCodeView(APIView):
         run_input = custom_input
         if not run_input and question_id:
             try:
-                question = CodingQuestion.objects.get(pk=question_id)
+                question = CodingQuestion.objects.get(id=question_id)
                 run_input = question.sample_input
             except CodingQuestion.DoesNotExist:
                 pass
@@ -65,16 +65,27 @@ class SubmitCodeView(APIView):
         if not serializer.is_valid():
             return Response({"error": serializer.errors}, status=400)
 
-        question = CodingQuestion.objects.get(
-            pk=serializer.validated_data["question_id"]
-        )
+        question_id = serializer.validated_data["question_id"]
         code = serializer.validated_data["code"]
 
+        try:
+            question = CodingQuestion.objects.get(id=question_id)
+        except CodingQuestion.DoesNotExist:
+            return Response({"error": "Question not found."}, status=404)
+
+        # Debug: log exactly which question is being judged
+        print("QUESTION:", question.title)
+        print("INPUT:", repr(question.sample_input))
+        print("EXPECTED:", repr(question.expected_output))
+
         verdict = judge_submission(
-            code,
+            code=code,
             test_input=question.sample_input,
             expected_output=question.expected_output,
         )
+
+        print("ACTUAL:", repr(verdict["actual_output"]))
+        print("PASSED:", verdict["passed"])
 
         submission = UserCodeSubmission.objects.create(
             user=request.user,
@@ -96,6 +107,7 @@ class SubmitCodeView(APIView):
                 "stderr_output": verdict["stderr_output"],
                 "execution_time_ms": verdict["execution_time_ms"],
                 "timed_out": verdict["timed_out"],
+                "error_message": verdict["error_message"],
                 "submission_id": submission.id,
             }
         )
