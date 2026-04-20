@@ -114,6 +114,8 @@ class NotificationService {
           UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
+
+    debugPrint('[NotificationService] Scheduled at: $scheduledDate (local: ${tz.local.name})');
   }
 
   Future<void> cancelReminder() async {
@@ -128,9 +130,9 @@ class NotificationService {
     return pending.any((element) => element.id == _notificationId);
   }
 
+  /// Shows an immediate notification for testing — works in all build modes.
   Future<void> showTestNotification() async {
     if (kIsWeb) return;
-    if (!kDebugMode) return;
 
     const AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(
@@ -153,5 +155,43 @@ class NotificationService {
       'Your reminders are working correctly!',
       notificationDetails,
     );
+  }
+
+  /// Schedules a one-off notification 10 seconds from now.
+  /// Use in debug mode on an emulator to verify scheduled alarms fire correctly.
+  Future<void> scheduleTestIn10Seconds() async {
+    if (kIsWeb) return;
+
+    final scheduledDate =
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10));
+
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+      'guido_reminders',
+      'Daily Study Reminders',
+      channelDescription: 'Daily reminders to study on Guido',
+      importance: Importance.max,
+      priority: Priority.high,
+      enableVibration: true,
+    );
+
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidDetails,
+      iOS: DarwinNotificationDetails(),
+    );
+
+    await _flutterLocalNotificationsPlugin.zonedSchedule(
+      98, // separate ID — won't cancel the real daily reminder
+      'Guido - Scheduled Test 🎉',
+      'Scheduled alarms are working correctly!',
+      scheduledDate,
+      notificationDetails,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+      // No matchDateTimeComponents → fires once only, not daily
+    );
+
+    debugPrint('[NotificationService] 10s test alarm scheduled for: $scheduledDate');
   }
 }

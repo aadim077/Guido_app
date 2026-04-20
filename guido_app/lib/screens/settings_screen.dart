@@ -20,7 +20,8 @@ class SettingsScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        title: const Text('Settings', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
+        title: const Text('Settings',
+            style: TextStyle(fontWeight: FontWeight.w700, fontSize: 17)),
         backgroundColor: const Color(0xFF1E1E2E),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -32,47 +33,68 @@ class SettingsScreen extends StatelessWidget {
             children: [
               const Text(
                 'Study Reminders',
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700, color: Color(0xFF6B7280)),
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Color(0xFF6B7280)),
               ),
               const SizedBox(height: 12),
               Card(
                 elevation: 0,
                 color: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: Colors.black.withValues(alpha: 0.05))),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(
+                        color: Colors.black.withValues(alpha: 0.05))),
                 child: Column(
                   children: [
                     ListTile(
-                      leading: const Icon(Icons.notifications_active_outlined, color: Color(0xFF2563EB)),
-                      title: const Text('Daily Reminder', style: TextStyle(fontWeight: FontWeight.w600)),
-                      subtitle: Text(kIsWeb ? 'Push notifications are available on mobile only' : 'Get a daily nudge to keep learning'),
+                      leading: const Icon(Icons.notifications_active_outlined,
+                          color: Color(0xFF2563EB)),
+                      title: const Text('Daily Reminder',
+                          style: TextStyle(fontWeight: FontWeight.w600)),
+                      subtitle: Text(kIsWeb
+                          ? 'Push notifications are available on mobile only'
+                          : 'Get a daily nudge to keep learning'),
                       trailing: Switch(
                         value: provider.isReminderEnabled,
-                        onChanged: kIsWeb ? null : (val) async {
-                          if (val) {
-                            final time = await showTimePicker(
-                              context: context,
-                              initialTime: provider.selectedTime,
-                            );
-                            if (time != null && context.mounted) {
-                              await provider.enableReminder(time);
-                              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder set for ${_formatTime(time)}')));
-                            }
-                          } else {
-                            await provider.disableReminder();
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reminder cancelled')));
-                            }
-                          }
-                        },
+                        onChanged: kIsWeb
+                            ? null
+                            : (val) async {
+                                if (val) {
+                                  final time = await showTimePicker(
+                                    context: context,
+                                    initialTime: provider.selectedTime,
+                                  );
+                                  if (time != null && context.mounted) {
+                                    await provider.enableReminder(time);
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Reminder set for ${_formatTime(time)}')));
+                                  }
+                                } else {
+                                  await provider.disableReminder();
+                                  if (context.mounted) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content:
+                                                Text('Reminder cancelled')));
+                                  }
+                                }
+                              },
                       ),
                     ),
                     if (provider.isReminderEnabled && !kIsWeb) ...[
                       const Divider(height: 1),
                       ListTile(
-                        leading: const Icon(Icons.access_time_rounded, color: Color(0xFF6B7280)),
-                        title: const Text('Reminder Time', style: TextStyle(fontWeight: FontWeight.w500)),
+                        leading: const Icon(Icons.access_time_rounded,
+                            color: Color(0xFF6B7280)),
+                        title: const Text('Reminder Time',
+                            style: TextStyle(fontWeight: FontWeight.w500)),
                         subtitle: Text(_formatTime(provider.selectedTime)),
-                        trailing: const Icon(Icons.chevron_right_rounded, color: Color(0xFF9CA3AF)),
+                        trailing: const Icon(Icons.chevron_right_rounded,
+                            color: Color(0xFF9CA3AF)),
                         onTap: () async {
                           final time = await showTimePicker(
                             context: context,
@@ -80,7 +102,9 @@ class SettingsScreen extends StatelessWidget {
                           );
                           if (time != null && context.mounted) {
                             await provider.updateReminderTime(time);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Reminder updated to ${_formatTime(time)}')));
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text(
+                                    'Reminder updated to ${_formatTime(time)}')));
                           }
                         },
                       ),
@@ -95,14 +119,87 @@ class SettingsScreen extends StatelessWidget {
                   style: TextStyle(fontSize: 12, color: Color(0xFF9CA3AF)),
                 ),
               ),
+
+              // ── Debug-only notification testing panel ─────────────────────
               if (kDebugMode && !kIsWeb) ...[
-                const SizedBox(height: 24),
-                OutlinedButton(
-                  onPressed: () {
-                    NotificationService().showTestNotification();
-                  },
-                  child: const Text('Send Test Notification Now'),
+                const SizedBox(height: 8),
+                const Divider(),
+                const SizedBox(height: 8),
+                const Text(
+                  'DEBUG — Notification Testing',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w700,
+                      color: Color(0xFFEF4444)),
                 ),
+                const SizedBox(height: 12),
+
+                // 1) Instant notification
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.notifications_active),
+                    label: const Text('Send Instant Test Notification'),
+                    onPressed: () async {
+                      await NotificationService().showTestNotification();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text(
+                                  '✅ Instant notification sent — check the notification bar')),
+                        );
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // 2) Scheduled in 10 seconds (for emulator testing)
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.alarm),
+                    label: const Text('Schedule Notification in 10 Seconds'),
+                    style:
+                        OutlinedButton.styleFrom(foregroundColor: Colors.orange),
+                    onPressed: () async {
+                      await NotificationService().scheduleTestIn10Seconds();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text(
+                                  '⏱ Notification scheduled — fires in ~10 seconds')),
+                        );
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 8),
+
+                // 3) Check pending
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    icon: const Icon(Icons.list_alt),
+                    label: const Text('Check Pending Notifications'),
+                    style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.green),
+                    onPressed: () async {
+                      final isScheduled =
+                          await NotificationService().isNotificationScheduled();
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(isScheduled
+                                ? '✅ Daily reminder IS scheduled'
+                                : '❌ No reminder scheduled'),
+                          ),
+                        );
+                      }
+                    },
+                  ),
+                ),
+                const SizedBox(height: 24),
               ],
             ],
           );
