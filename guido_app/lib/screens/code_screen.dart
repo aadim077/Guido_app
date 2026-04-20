@@ -523,6 +523,10 @@ class _OutputTab extends StatelessWidget {
         if (sub != null) ...[
           _VerdictBanner(passed: sub.passed, timedOut: sub.timedOut),
           const SizedBox(height: 14),
+          if (sub.errorMessage != null && !sub.passed) ...[
+            _ErrorMessageBanner(message: sub.errorMessage!),
+            const SizedBox(height: 10),
+          ],
           _OutputBlock(label: 'Your Output', text: sub.actualOutput),
           const SizedBox(height: 10),
           _OutputBlock(label: 'Expected Output', text: sub.expectedOutput),
@@ -556,6 +560,7 @@ class _OutputTab extends StatelessWidget {
     );
   }
 }
+
 
 
 class _HistoryTab extends StatelessWidget {
@@ -666,6 +671,42 @@ class _HistoryTab extends StatelessWidget {
           ),
         );
       },
+    );
+  }
+}
+
+
+class _ErrorMessageBanner extends StatelessWidget {
+  final String message;
+
+  const _ErrorMessageBanner({required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: const Color(0xFFFFF7ED),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: const Color(0xFFFED7AA)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.info_outline_rounded,
+              size: 16, color: Color(0xFFF97316)),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(
+                fontSize: 13,
+                color: Color(0xFF92400E),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

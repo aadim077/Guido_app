@@ -33,6 +33,7 @@ class CodeSubmissionResult {
   final String stderrOutput;
   final int executionTimeMs;
   final bool timedOut;
+  final String? errorMessage;
 
   CodeSubmissionResult({
     required this.submissionId,
@@ -42,6 +43,7 @@ class CodeSubmissionResult {
     required this.stderrOutput,
     required this.executionTimeMs,
     required this.timedOut,
+    this.errorMessage,
   });
 
   factory CodeSubmissionResult.fromJson(Map<String, dynamic> json) {
@@ -53,9 +55,11 @@ class CodeSubmissionResult {
       stderrOutput: json['stderr_output'] as String? ?? '',
       executionTimeMs: json['execution_time_ms'] as int? ?? 0,
       timedOut: json['timed_out'] as bool? ?? false,
+      errorMessage: json['error_message'] as String?,
     );
   }
 }
+
 
 
 class CodeSubmissionHistoryItem {
